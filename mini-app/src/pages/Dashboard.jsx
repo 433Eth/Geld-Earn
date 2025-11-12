@@ -17,21 +17,19 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    //const tg = window.Telegram?.WebApp;
+    const tg = window.Telegram?.WebApp;
     setLoading(true)
 
     const loadUser = async () => {
       try {
-        //if (!tg || !tg.initDataUnsafe?.user) {
-         // throw new Error("Telegram WebApp user data not found");
-       // }
+        if (!tg || !tg.initDataUnsafe?.user) {
+          throw new Error("Telegram WebApp user data not found");
+        }
 
-        //const telegramUser = tg.initDataUnsafe.user;
-        //const userId = telegramUser.id;
-       // const name = telegramUser.first_name;
-        const userId = 755677755;
-        const name = "Test name";
-        
+        const telegramUser = tg.initDataUnsafe.user;
+        const userId = telegramUser.id;
+        const name = telegramUser.first_name;
+
 
         // Send user info to backend
         const res = await publicApi.post("/api/user/sync", { id: userId, name });
