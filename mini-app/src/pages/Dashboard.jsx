@@ -17,18 +17,21 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const tg = window.Telegram?.WebApp;
+    //const tg = window.Telegram?.WebApp;
     setLoading(true)
 
     const loadUser = async () => {
       try {
-        if (!tg || !tg.initDataUnsafe?.user) {
-          throw new Error("Telegram WebApp user data not found");
-        }
+        //if (!tg || !tg.initDataUnsafe?.user) {
+         // throw new Error("Telegram WebApp user data not found");
+       // }
 
-        const telegramUser = tg.initDataUnsafe.user;
-        const userId = telegramUser.id;
-        const name = telegramUser.first_name;
+        //const telegramUser = tg.initDataUnsafe.user;
+        //const userId = telegramUser.id;
+       // const name = telegramUser.first_name;
+        const userId = 755677755;
+        const name = "Test name";
+        
 
         // Send user info to backend
         const res = await publicApi.post("/api/user/sync", { id: userId, name });
@@ -45,7 +48,7 @@ export default function Dashboard() {
   }, [refresh]);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`https://t.me/Geldearn_Bot?start=${user.telegram_id}`);
+    navigator.clipboard.writeText(https://t.me/Geldearn_Bot?start=${user.telegram_id});
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
@@ -95,7 +98,7 @@ export default function Dashboard() {
         <div className="w-full h-3 bg-[#0D0D0D] rounded-full mt-5 overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
+            animate={{ width: ${progress}% }}
             transition={{ duration: 1 }}
             className="h-3 rounded-full bg-gradient-to-r from-[#A259FF] via-[#B388FF] to-[#5B2EFF] shadow-[0_0_20px_#A259FF]"
           ></motion.div>
@@ -115,7 +118,7 @@ export default function Dashboard() {
         <p className="text-sm font-semibold text-[#BFBFBF] mb-2">Your Referral Link</p>
         <div className="flex items-center gap-4 justify-between bg-[#0D0D0D] rounded-2xl p-3 border border-[#5B2EFF]/30">
           <span className="text-xs md:text-sm break-all text-[#CBA6F7]">
-            {`https://t.me/Geldearn_Bot?start=${user.telegram_id}`}
+            {https://t.me/Geldearn_Bot?start=${user.telegram_id}}
           </span>
           <button
             onClick={handleCopy}
@@ -132,10 +135,10 @@ export default function Dashboard() {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.4 }}
         onClick={() => navigate("/withdraw")}
-        className={`w-full mt-8 py-4 rounded-3xl font-semibold text-white ${user.unclaimed_referrals * 0.4 >= 50
+        className={w-full mt-8 py-4 rounded-3xl font-semibold text-white ${user.unclaimed_referrals * 0.4 >= 50
           ? "bg-gradient-to-r from-[#A259FF] to-[#5B2EFF] shadow-[0_0_30px_rgba(162,89,255,0.5)] hover:opacity-90"
           : "bg-[#0D0D0D] border border-[#1A1A1A] text-[#808080] cursor-not-allowed"
-          } transition-all duration-300`}
+          } transition-all duration-300}
         disabled={user.unclaimed_referrals * 0.4 < 50}
       >
         {user.unclaimed_referrals * 0.4 >= 50
