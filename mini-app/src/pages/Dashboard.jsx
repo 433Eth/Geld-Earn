@@ -107,7 +107,6 @@ export default function Dashboard() {
           {progress.toFixed(0)}% of goal reached
         </p>
       </motion.div>
-
       {/* Referral Link Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
