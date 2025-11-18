@@ -101,7 +101,7 @@ export default function Dashboard() {
           ></motion.div>
         </div>
         <p className="mt-3 text-xs text-center text-[#BFBFBF]">
-          {progress.toFixed(0)}% of goal reached
+          {progress.toFixed(1)}% of goal reached
         </p>
       </motion.div>
 
