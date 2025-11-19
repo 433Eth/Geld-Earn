@@ -16,8 +16,10 @@ export default function SuperAdmin() {
     const [confirmDelete, setConfirmDelete] = useState(null);
     const [addingAdmin, setAddingAdmin] = useState(false);
     const [deletingAdmin, setDeletingAdmin] = useState(false);
+    const [broadcastMessage, setBroadcastMessage] = useState("");
+    const [sendingBroadcast, setSendingBroadcast] = useState(false);
 
-    // ✅ Fetch all withdrawals and admins
+    // Fetch all withdrawals and admins
     const fetchData = async () => {
         setLoading(true);
         try {
@@ -37,12 +39,32 @@ export default function SuperAdmin() {
         }
     };
 
+    const handleBroadcast = async () => {
+        if (!broadcastMessage.trim()) return;
+
+        setSendingBroadcast(true);
+
+        try {
+            await publicApi.post("/api/admin/broadcast", {
+                message: broadcastMessage.trim(),
+            });
+
+            showAlert("success", "Broadcast started!");
+            setBroadcastMessage("");
+        } catch (err) {
+            console.error(err.message);
+            showAlert("error", "Failed to send broadcast.");
+        } finally {
+            setSendingBroadcast(false);
+        }
+    };
+
     useEffect(() => {
         fetchData();
     }, []);
 
 
-    // ✅ Add new admin
+    // Add new admin
     const handleAddAdmin = async () => {
         if (!newAdmin.trim()) return;
         setAddingAdmin(true)
@@ -60,7 +82,7 @@ export default function SuperAdmin() {
         }
     };
 
-    // ✅ Delete admin with confirmation
+    // Delete admin with confirmation
     const handleDeleteAdmin = async (username) => {
         setDeletingAdmin(true)
         try {
@@ -76,7 +98,7 @@ export default function SuperAdmin() {
         }
     };
 
-    // ✅ Alerts
+    // Alerts
     const showAlert = (type, message) => {
         setAlert({ type, message });
         setTimeout(() => setAlert(null), 4000);
@@ -100,7 +122,7 @@ export default function SuperAdmin() {
 
     return (
         <div className="min-h-screen bg-black text-white pb-28 px-4 font-sans relative overflow-hidden pt-6">
-            {/* ✅ Floating alert */}
+            {/* Floating alert */}
             <AnimatePresence>
                 {alert && (
                     <motion.div
@@ -127,7 +149,7 @@ export default function SuperAdmin() {
                 Super Admin Dashboard
             </h1>
 
-            {/* 🔹 Tabs */}
+            {/* Tabs */}
             <div className="flex justify-center gap-6 mb-8">
                 {["pending", "paid"].map((tab) => (
                     <button
@@ -143,7 +165,7 @@ export default function SuperAdmin() {
                 ))}
             </div>
 
-            {/* 🔹 Withdrawals list */}
+            {/* Withdrawals list */}
             {filtered.length === 0 ? (
                 <p className="text-gray-400 text-center">
                     No {activeTab} withdrawal requests found.
@@ -174,21 +196,21 @@ export default function SuperAdmin() {
                                     <p className="text-gray-500 text-xs mt-1">
                                         Requested: {new Date(item.created_at).toLocaleString(
                                             "en-US", {
-                                                month: "short",
-                                                day: "numeric",
-                                                year: "numeric"
-                                            }
+                                            month: "short",
+                                            day: "numeric",
+                                            year: "numeric"
+                                        }
                                         )}
                                     </p>
                                     {item.processed_at && (
                                         <p className="text-gray-500 text-xs">
                                             Processed: {new Date(item.processed_at).toLocaleString(
-                                            "en-US", {
+                                                "en-US", {
                                                 month: "short",
                                                 day: "numeric",
                                                 year: "numeric"
                                             }
-                                        )}
+                                            )}
                                         </p>
                                     )}
                                     <p className="text-gray-500 text-xs">
@@ -201,7 +223,7 @@ export default function SuperAdmin() {
                 </div>
             )}
 
-            {/* 🔹 Admin management */}
+            {/* Admin management */}
             <div className="mt-12 border-t border-[#5B2EFF]/30 pt-6">
                 <h2 className="text-2xl font-semibold text-purple-400 mb-4 text-center">
                     Manage Admins
@@ -247,7 +269,33 @@ export default function SuperAdmin() {
                 </div>
             </div>
 
-            {/* 🔹 Delete confirmation popup */}
+
+            {/* Message broadcast */}
+            <div className="mt-12 border-t border-[#5B2EFF]/30 pt-6">
+                <h2 className="text-2xl font-semibold text-purple-400 mb-4 text-center">
+                    Broadcast Message
+                </h2>
+
+                <div className="max-w-md mx-auto space-y-4">
+                    <textarea
+                        className="w-full bg-[#1A1A1A] text-white p-4 rounded-xl border border-[#5B2EFF]/40 focus:border-[#A259FF] outline-none h-32"
+                        placeholder="Write your message here..."
+                        value={broadcastMessage}
+                        onChange={(e) => setBroadcastMessage(e.target.value)}
+                    ></textarea>
+
+                    <button
+                        onClick={handleBroadcast}
+                        disabled={sendingBroadcast || !broadcastMessage.trim()}
+                        className="w-full bg-gradient-to-r from-[#A259FF] to-[#5B2EFF] py-3 rounded-xl font-semibold text-white hover:opacity-90 transition"
+                    >
+                        {sendingBroadcast ? "Sending..." : "Send Broadcast"}
+                    </button>
+                </div>
+            </div>
+
+
+            {/* Delete confirmation popup */}
             <AnimatePresence>
                 {confirmDelete && (
                     <motion.div
