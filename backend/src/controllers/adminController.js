@@ -85,64 +85,39 @@ export const getUsers = async (req, res) => {
         return res.status(500).json({ error: "Server error" });
     }
 };
-
-
-export const getAllReferrals = async (req, res) => {
+export const getUsers = async (req, res) => {
     try {
-        const { telegram_id } = req.query;
+        let { page = 1, limit = 20 } = req.query;
+        page = parseInt(page);
+        limit = parseInt(limit);
 
-        const query = await pool.query(
+        const offset = (page - 1) * limit;
+
+        // Get users with pagination
+        const usersQuery = await pool.query(
             `
-            SELECT 
-                id,
-                telegram_id,
-                username,
-                name,
-                profile_photo,
-                referral_count,
-                created_at
+            SELECT id, telegram_id, username, name, profile_photo, referral_count, created_at
             FROM users
-            WHERE referred_by = $1
-            ORDER BY id DESC
-            `,
-            [telegram_id]
+            ORDER BY referral_count DESC
+            LIMIT $1 OFFSET $2`
+            ,
+            [limit, offset]
         );
 
+        let totalUsers = null
+        if (page === 1) {
+            const countQuery = await pool.query(`SELECT COUNT(*) FROM users`);
+            totalUsers = parseInt(countQuery.rows[0].count);
+            console.log("User counted ", totalUsers)
+        };
+
         return res.json({
-            referrals: query.rows,
+            users: usersQuery.rows,
+            has_more: usersQuery.rows.length === limit,
+            total_users: totalUsers
         });
     } catch (err) {
-        console.error("❌ Error fetching user referrals:", err.message);
+        console.error("❌ Error fetching users:", err.message);
         return res.status(500).json({ error: "Server error" });
-    }
-};
-
-export const searchUser = async (req, res) => {
-    const q = req.query.query?.trim();
-
-    if (!q) {
-        return res.status(400).json({ error: "Missing query parameter" });
-    }
-
-    try {
-
-        // General search (name or username, partial match)
-        const textSearch = await pool.query(
-            `
-            SELECT 
-               id, telegram_id, username, name, profile_photo, referral_count, created_at
-               FROM users
-               WHERE username ILIKE $1
-            `,
-            [`%${q}%`]
-        );
-
-
-        return res.json({
-            user: textSearch.rows,
-        });
-    } catch (err) {
-        console.error("Search error:", err);
-        res.status(500).json({ error: "Server error" });
     }
 };
